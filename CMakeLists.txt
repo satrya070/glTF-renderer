@@ -12,10 +12,8 @@ set(GLFW_LIBRARY ${CMAKE_SOURCE_DIR}/external/glfw/lib-vc2022/glfw3.lib)  # add 
 include_directories(external/glad/include)  # add glad
 add_library(glad STATIC external/glad/src/glad.c)
 include_directories(${CMAKE_SOURCE_DIR}/external/glm)  # add glm
+include_directories(${CMAKE_SOURCE_DIR}/external/gltf)  # add gltf
 
-
-
-#find_package(glfw3 3.3 REQUIRED)
 
 # source files
 set(SOURCES src/main.cpp)

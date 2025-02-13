@@ -5,6 +5,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#define TINYGLTF_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <tiny_gltf.h>
 
 void framebuffer_resize_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
