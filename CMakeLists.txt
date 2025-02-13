@@ -14,11 +14,24 @@ add_library(glad STATIC external/glad/src/glad.c)
 include_directories(${CMAKE_SOURCE_DIR}/external/glm)  # add glm
 include_directories(${CMAKE_SOURCE_DIR}/external/gltf)  # add gltf
 
-
 # source files
 set(SOURCES src/main.cpp)
 
 # create executable
 add_executable(gltf_renderer ${SOURCES})
 
-target_link_libraries(gltf_renderer glad ${GLFW_LIBRARY} OpenGL32)
+# add imgui
+set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/external/imgui)
+set(IMGUI_SOURCES
+	${IMGUI_DIR}/imgui.cpp
+    ${IMGUI_DIR}/imgui_draw.cpp
+    ${IMGUI_DIR}/imgui_widgets.cpp
+    ${IMGUI_DIR}/imgui_tables.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
+)
+target_sources(gltf_renderer PRIVATE ${IMGUI_SOURCES})
+target_include_directories(gltf_renderer PRIVATE ${IMGUI_DIR})
+
+
+target_link_libraries(gltf_renderer imgui glad ${GLFW_LIBRARY} OpenGL32)

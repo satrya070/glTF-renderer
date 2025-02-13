@@ -1,6 +1,3 @@
-// UdemyOpenGL.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -9,6 +6,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <tiny_gltf.h>
+#include "imgui.h"
+
 
 void framebuffer_resize_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -53,6 +52,8 @@ int main()
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        std::cout << "good";
 
         // clear all
         glfwTerminate();
