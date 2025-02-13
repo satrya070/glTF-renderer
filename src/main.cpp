@@ -4,7 +4,7 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-//#include <glm/glm.hpp>
+#include <glm/glm.hpp>
 
 void framebuffer_resize_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -58,5 +58,5 @@ int main()
     std::cout << "Hello World!\n";
 }
 
-void framebuffer_resize_callback(GLFWwindow* window, int widht, int height) {
+void framebuffer_resize_callback(GLFWwindow* window, int width, int height) {
 }

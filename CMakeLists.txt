@@ -7,12 +7,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 
 include_directories(external/glfw/include)
-find_library(GLFW_LIBRARY glfw3 PATHS ${CMAKE_SOURCE_DIR}/external/glfw/lib-vc2022)
-# set(GLFW_LIBRARY external/glfw/lib-vc2022/glfw3)  # not sure why it doesnt it this way?
-
-# add glad
-include_directories(external/glad/include)
+#find_library(GLFW_LIBRARY glfw3 PATHS ${CMAKE_SOURCE_DIR}/external/glfw/lib-vc2022)
+set(GLFW_LIBRARY ${CMAKE_SOURCE_DIR}/external/glfw/lib-vc2022/glfw3.lib)  # add glfw
+include_directories(external/glad/include)  # add glad
 add_library(glad STATIC external/glad/src/glad.c)
+include_directories(${CMAKE_SOURCE_DIR}/external/glm)  # add glm
+
+
 
 #find_package(glfw3 3.3 REQUIRED)
 
@@ -21,7 +22,5 @@ set(SOURCES src/main.cpp)
 
 # create executable
 add_executable(gltf_renderer ${SOURCES})
-
-target_include_directories(gltf_renderer PRIVATE "External Libraries")
 
 target_link_libraries(gltf_renderer glad ${GLFW_LIBRARY} OpenGL32)
