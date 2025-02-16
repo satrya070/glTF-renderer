@@ -31,7 +31,7 @@ set(IMGUI_SOURCES
     ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
 )
 target_sources(gltf_renderer PRIVATE ${IMGUI_SOURCES})
-target_include_directories(gltf_renderer PRIVATE ${IMGUI_DIR})
+target_include_directories(gltf_renderer PRIVATE ${IMGUI_DIR} ${CMAKE_SOURCE_DIR}/src)
 
 
 target_link_libraries(gltf_renderer imgui glad ${GLFW_LIBRARY} OpenGL32)
