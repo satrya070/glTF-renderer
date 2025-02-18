@@ -27,7 +27,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 // set camera
 MyCamera camera(
-    glm::vec3(0.f, 0.f, 1000.f),
+    glm::vec3(0.f, 0.f, 5.f),
     glm::vec3(0.f, 0.f, 1.f),
     0.f,
     0.f
@@ -283,14 +283,14 @@ int main()
 
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), ((float)WIDTH / (float)HEIGHT), 0.1f, 100000.0f);
         glm::mat4 view = camera.GetViewMatrix();
-        glm::mat4 model_m = glm::mat4(1.0f);
+        glm::mat4 model_t = glm::mat4(1.0f);
         shader.setMat4("projection", projection);
         shader.setMat4("view", view);
-        shader.setMat4("model", model_m);
+        shader.setMat4("model", model_t);
 
         DrawModel(vaoAndEbos, model);
 
-        // std::cout << "position: " << glm::to_string(camera.Position) << ", yaw: " << camera.Yaw << std::endl;
+        std::cout << "position: " << glm::to_string(camera.Position) << ", yaw: " << camera.Yaw << std::endl;
 
         glfwSwapBuffers(window);
         glfwPollEvents();
