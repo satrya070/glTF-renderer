@@ -1,18 +1,17 @@
 #version 330 core
-layout(location = 0) in vec3 in_vertex;
-layout(location = 1) in vec3 in_normal;
-layout(location = 2) in vec2 in_texcoord;
+//in vec3 normal;
+in vec3 position;
+//in vec2 texcoord;
 
-uniform mat4 MVP;
+uniform sampler2D tex;
+uniform vec3 sun_position;
+uniform vec3 sun_color;
 
-out vec3 normal;
-out vec3 position;
-out vec2 texcoord;
+out vec4 FragColor;
 
-void main(){
-	gl_Position = MVP * vec4(in_vertex, 1);
-	position = gl_Position.xyz;
-	normal = normalize(mat3(MVP) * in_normal);
-	position = in_vertex;
-	texcoord = in_texcoord;
+//out vec4 color;
+void main() {
+	//float lum = max(dot(normal, normalize(sun_position)), 0.0);
+	//color = texture(tex, texcoord) * vec4((0.3 + 0.7 * lum) * sun_color, 1.0);
+	FragColor = vec4(1.0, 0., 0., 0.8);
 }

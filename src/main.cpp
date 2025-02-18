@@ -8,8 +8,12 @@
 #include <tiny_gltf.h>
 #include "imgui.h"
 #include "camera.h"
+#include "shader.h"
+#include <glm/gtx/string_cast.hpp>
 
 #define BUFFER_OFFSET(i) ((char*)NULL + (i))
+
+typedef Camera MyCamera;
 
 const unsigned int WIDTH = 800;
 const unsigned int HEIGHT = 600;
@@ -22,8 +26,8 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 // set camera
-Camera camera(
-    glm::vec3(0.f, 0.f, 0.f),
+MyCamera camera(
+    glm::vec3(0.f, 0.f, 1000.f),
     glm::vec3(0.f, 0.f, 1.f),
     0.f,
     0.f
@@ -101,6 +105,7 @@ void bindMesh(std::map<int, GLuint>& vbos, tinygltf::Model& model, tinygltf::Mes
             if (attrib.first.compare("POSITION") == 0) vaa = 0;
             if (attrib.first.compare("NORMAL") == 0) vaa = 1;
             if (attrib.first.compare("TEXCOORD_0") == 0) vaa = 2;
+            if (attrib.first.compare("TANGENT") == 0) vaa = 3;
             if (vaa > -1) {
                 glEnableVertexAttribArray(vaa);
                 glVertexAttribPointer(vaa, size, accessor.componentType, accessor.normalized ? GL_TRUE : GL_FALSE, byteStride, BUFFER_OFFSET(accessor.byteOffset));
@@ -136,7 +141,7 @@ std::pair<GLuint, std::map<int, GLuint>> bindModel(tinygltf::Model& model) {
     }
 
     glBindVertexArray(0);
-    // clean vbos but not delete index buffers yet
+    // clean vbos but not delete index/element buffers yet
     for (auto it = vbos.cbegin(); it != vbos.cend();) {
         tinygltf::BufferView bufferView = model.bufferViews[it->first];
         if (bufferView.target != GL_ELEMENT_ARRAY_BUFFER) {
@@ -243,17 +248,25 @@ int main()
         return -1;
     }
 
+    // init shader
+    Shader shader = Shader("../../../shaders/vertex_shader.txt", "../../../shaders/fragment_shader.txt");
+
     // load tinygltf model
-    std::string filename = "../../../models/lowpoly_tree/result.gltf";
+    std::string filename = "../../../models/Cube/Cube.gltf";
     tinygltf::Model model;
     loadModel(model, filename.c_str());
     // model info
     std::cout << "n meshes: " << model.meshes.size() << std::endl;
     std::cout << "n nodes: " << model.nodes.size() << std::endl;
-    std::cout << "number materials: " << model.materials.size();
+    std::cout << "number materials: " << model.materials.size() << std::endl;
 
     // call other load methods
     DebugModel(model);
+    std::pair<GLuint, std::map<int, GLuint>> vaoAndEbos = bindModel(model);
+
+    glm::vec3 sun_position = glm::vec3(3.0, 10.0, -5.0);
+    glm::vec3 sun_color = glm::vec3(1.0);
+
 
     while (!glfwWindowShouldClose(window))
     {
@@ -264,7 +277,20 @@ int main()
         processInput(window);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        shader.use();
+
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), ((float)WIDTH / (float)HEIGHT), 0.1f, 100000.0f);
+        glm::mat4 view = camera.GetViewMatrix();
+        glm::mat4 model_m = glm::mat4(1.0f);
+        shader.setMat4("projection", projection);
+        shader.setMat4("view", view);
+        shader.setMat4("model", model_m);
+
+        DrawModel(vaoAndEbos, model);
+
+        // std::cout << "position: " << glm::to_string(camera.Position) << ", yaw: " << camera.Yaw << std::endl;
 
         glfwSwapBuffers(window);
         glfwPollEvents();
