@@ -28,7 +28,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 // set camera
 MyCamera camera(
     glm::vec3(0.f, 0.f, 5.f),
-    glm::vec3(0.f, 0.f, 1.f),
+    glm::vec3(0.f, 1.f, 0.f),
     0.f,
     0.f
 );
@@ -227,7 +227,6 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-    //glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
     window = glfwCreateWindow(WIDTH, HEIGHT, "glTF renderer", NULL, NULL);
     if (!window) {
@@ -247,6 +246,9 @@ int main()
         std::cout << "failed to init GLAD" << std::endl;
         return -1;
     }
+
+    // gl settings
+    glEnable(GL_DEPTH_TEST);
 
     // init shader
     Shader shader = Shader("../../../shaders/vertex_shader.txt", "../../../shaders/fragment_shader.txt");
@@ -290,7 +292,8 @@ int main()
 
         DrawModel(vaoAndEbos, model);
 
-        std::cout << "position: " << glm::to_string(camera.Position) << ", yaw: " << camera.Yaw << std::endl;
+        //std::cout << "position: " << glm::to_string(camera.Position) << ", yaw: " << camera.Yaw << std::endl;
+        std::cout << "position: " << glm::to_string(camera.Position) << ", yaw: " << camera.Yaw << ", pitch: " << camera.Pitch << std::endl;
 
         glfwSwapBuffers(window);
         glfwPollEvents();
