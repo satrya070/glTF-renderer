@@ -25,8 +25,6 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 Camera camera(
     glm::vec3(0.f, 0.f, 10.f),
     glm::vec3(0.f, 1.f, 0.f)
-//    0.f,
-//    0.f
 );
 
 // initialize relevant variables
@@ -96,6 +94,9 @@ int main()
     glBindVertexArray(0);
     
     shader.use();
+
+    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), ((float)WIDTH / (float)HEIGHT), 0.1f, 100000.0f);
+    glm::mat4 model = glm::mat4(1.0);
  
 
     while (!glfwWindowShouldClose(window))
@@ -109,10 +110,8 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), ((float)WIDTH / (float)HEIGHT), 0.1f, 100000.0f);
         glm::mat4 view = camera.GetViewMatrix();
-        glm::mat4 model = glm::mat4(1.0);
+        
         shader.setMat4("projection", projection);
         shader.setMat4("view", view);
         shader.setMat4("model", model);
@@ -121,7 +120,6 @@ int main()
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
-        //std::cout << "windowshouls close: " << glfwWindowShouldClose(window);
         std::cout << "position: " << glm::to_string(camera.Position) << ", yaw: " << camera.Yaw << ", pitch: " << camera.Pitch << std::endl;
 
         glfwSwapBuffers(window);
