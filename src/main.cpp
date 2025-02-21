@@ -5,8 +5,9 @@
 #define TINYGLTF_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <tiny_gltf.h>
 #include "imgui.h"
+#include "shader.h"
+#include <glm/gtx/string_cast.hpp>
 
 #include "camera.h"
 
@@ -22,10 +23,10 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 // set camera
 Camera camera(
-    glm::vec3(0.f, 0.f, 0.f),
-    glm::vec3(0.f, 0.f, 1.f),
-    0.f,
-    0.f
+    glm::vec3(0.f, 0.f, 10.f),
+    glm::vec3(0.f, 1.f, 0.f)
+//    0.f,
+//    0.f
 );
 
 // initialize relevant variables
@@ -68,6 +69,35 @@ int main()
         return -1;
     }
 
+    // gl settings
+    glEnable(GL_DEPTH_TEST);
+
+    Shader shader = Shader("../../../shaders/vertex_shader.txt", "../../../shaders/fragment_shader.txt");
+
+    // basic triangle stuff
+    float vertices[] = {
+        // first triangle
+         0.5f,  0.5f, 0.0f,  // top right
+         0.5f, -0.5f, 0.0f,  // bottom right
+        -0.5f,  0.5f, 0.0f,  // top left
+    };
+
+    GLuint VAO, VBO;
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices[0], GL_STATIC_DRAW);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+    
+    shader.use();
+ 
+
     while (!glfwWindowShouldClose(window))
     {
         float currentFrame = glfwGetTime();
@@ -77,15 +107,31 @@ int main()
         processInput(window);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), ((float)WIDTH / (float)HEIGHT), 0.1f, 100000.0f);
+        glm::mat4 view = camera.GetViewMatrix();
+        glm::mat4 model = glm::mat4(1.0);
+        shader.setMat4("projection", projection);
+        shader.setMat4("view", view);
+        shader.setMat4("model", model);
+
+        shader.use();
+        glBindVertexArray(VAO);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        //std::cout << "windowshouls close: " << glfwWindowShouldClose(window);
+        std::cout << "position: " << glm::to_string(camera.Position) << ", yaw: " << camera.Yaw << ", pitch: " << camera.Pitch << std::endl;
 
         glfwSwapBuffers(window);
         glfwPollEvents();
-
-        //std::cout << "windowshouls close: " << glfwWindowShouldClose(window);
     }
 
     // clear all buffers
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteProgram(shader.ID);
 
     glfwTerminate();
     return 0;
@@ -95,18 +141,6 @@ void processInput(GLFWwindow* window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-
-    // used for dissapear and re appear mouse. RREMOVE if not needed
-    /*if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
-        if (!glfw_cursor_normal) {
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-            glfw_cursor_normal = true;
-        }
-        else {
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-            glfw_cursor_normal = false;
-        }*/
-
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera.ProcessKeyboard(FORWARD, deltaTime);
