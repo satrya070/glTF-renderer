@@ -1,7 +1,7 @@
 #version 330 core
 //in vec3 normal;
 in vec3 position;
-//in vec2 texcoord;
+in vec2 texCoord;
 
 uniform sampler2D tex;
 uniform vec3 sun_position;
@@ -17,5 +17,6 @@ void main() {
 	//color = texture(tex, texcoord) * vec4((0.3 + 0.7 * lum) * sun_color, 1.0);
 	//FragColor = vec4(1.0, 0., 0., 0.8);
 
-	FragColor = vec4(vertexColor, 1.0); // Display the vertex data as color
+	vec3 color = texture(tex, texCoord).rgb;
+	FragColor = vec4(color, 1.0); // Display the vertex data as color
 }

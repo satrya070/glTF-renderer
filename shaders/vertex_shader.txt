@@ -11,16 +11,16 @@ uniform mat4 projection;
 
 //out vec3 normal;
 out vec3 position;
-//out vec2 texcoord;
+out vec2 texCoord;
 
 out vec3 vertexColor;
 
 void main() {
-	gl_Position = projection * view * model * vec4(in_vertex, 1.0); //projection * view * model * vec4(in_vertex.x, in_vertex.y, in_vertex.z - 2.0, 1.);
+	gl_Position = projection * view * model * vec4(in_vertex, 1.0);
 	position = gl_Position.xyz;
 	//normal = normalize(mat3(MVP) * in_normal);
 	position = in_vertex;
-	//texcoord = in_texcoord;
+	texCoord = in_texcoord;
 
 	vertexColor = (in_vertex + 1.0) * 0.5; // Map position to [0, 1] range for color
 }

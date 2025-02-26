@@ -113,6 +113,48 @@ void bindMesh(std::map<int, GLuint>& vbos, tinygltf::Model& model, tinygltf::Mes
             else {
                 std::cout << "vaa missing: " << attrib.first << std::endl;
             }
+
+            // bind textures
+            if (model.textures.size() > 0) {
+                tinygltf::Texture& tex = model.textures[0];
+
+                if (tex.source > -1) {
+                    GLuint texid;
+                    glGenTextures(1, &texid);
+
+                    tinygltf::Image& image = model.images[tex.source];
+
+                    glBindTexture(GL_TEXTURE_2D, texid);
+                    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+                    GLenum format = GL_RGBA;
+
+                    if (image.component == 1) {
+                        format = GL_RED;
+                    }
+                    else if (image.component == 2) {
+                        format = GL_RG;
+                    }
+                    else if (image.component == 3) {
+                        format = GL_RGB;
+                    }
+                    else {
+                        format = GL_RGBA;
+                    }
+
+                    /*
+                    GLenum type = GL_UNSIGNED_BYTE;
+                    if (image.bits == 8) {
+
+                    }*/
+                    
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0, format, GL_UNSIGNED_BYTE, &image.image.at(0));
+                }
+            }
         }
     }
 }
@@ -292,8 +334,7 @@ int main()
 
         DrawModel(vaoAndEbos, model);
 
-        //std::cout << "position: " << glm::to_string(camera.Position) << ", yaw: " << camera.Yaw << std::endl;
-        std::cout << "position: " << glm::to_string(camera.Position) << ", yaw: " << camera.Yaw << ", pitch: " << camera.Pitch << std::endl;
+        // std::cout << "position: " << glm::to_string(camera.Position) << ", yaw: " << camera.Yaw << ", pitch: " << camera.Pitch << std::endl;
 
         glfwSwapBuffers(window);
         glfwPollEvents();
