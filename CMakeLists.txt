@@ -13,6 +13,7 @@ include_directories(external/glad/include)  # add glad
 add_library(glad STATIC external/glad/src/glad.c)
 include_directories(${CMAKE_SOURCE_DIR}/external/glm)  # add glm
 include_directories(${CMAKE_SOURCE_DIR}/external/gltf)  # add gltf
+include_directories(${CMAKE_SOURCE_DIR}/external/nlohmann)  # add json
 
 # source files
 set(SOURCES src/main.cpp)

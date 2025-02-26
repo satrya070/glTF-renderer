@@ -7,8 +7,12 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <tiny_gltf.h>
 #include "imgui.h"
+#include "nlohmann/json.hpp"
+#include <fstream>
 
 #include "camera.h"
+
+using json = nlohmann::json;
 
 const unsigned int WIDTH = 800;
 const unsigned int HEIGHT = 600;
@@ -67,6 +71,32 @@ int main()
         std::cout << "failed to init GLAD" << std::endl;
         return -1;
     }
+
+    // parse json TODO put in seperate function
+    std::ifstream file("../../../models/cube/Cube.gltf");
+    if (!file.is_open()) {
+        std::cerr << "failed to load gltf json" << std::endl;
+        return -1;
+    }
+    json data = json::parse(file);
+    file.close();
+
+    // loop all nodes
+    for (auto& node : data["nodes"])
+    {
+        int mesh_index = node["mesh"];
+        //std::cout << "mesh: " << node["mesh"] << std::endl;
+        json meshData = data["meshes"][mesh_index];
+        std::vector<json> primitives = meshData["primitives"];
+        for (json& primitive : primitives)
+        {
+            int mode = primitive["mode"];  // mode indicates whether to render as POINTS/TRIANGLES/LINES etc
+            int primitive_accessor = primitive["indices"];
+            int primitive_material_accessor = primitive["material"];
+        }
+    }
+
+    std::cout << data["accessors"];
 
     while (!glfwWindowShouldClose(window))
     {
